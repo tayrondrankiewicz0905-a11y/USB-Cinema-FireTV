@@ -94,7 +94,12 @@ class MainActivity : Activity() {
             isFocusableInTouchMode = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
             setOnItemClickListener { _, _, position, _ ->
-                if (position in movies.indices) playMovie(movies[position])
+                status.text = "Film angeklickt: $position"
+                if (position in movies.indices) {
+                    playMovie(movies[position])
+                } else {
+                    status.text = "Ungültige Film-Auswahl: $position"
+                }
             }
         }
         root.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
