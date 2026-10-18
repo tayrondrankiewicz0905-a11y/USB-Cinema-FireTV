@@ -1,9 +1,9 @@
-name: Build USB Cinema APK
+name: Build USB Cinema Fire TV APK
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,23 +11,31 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up JDK
+
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Set up Android SDK
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install Android SDK packages
         uses: android-actions/setup-android@v3
-      - name: Install Android platform
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: USB-Cinema-FireTV-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: USB-Cinema-FireTV-APK
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
