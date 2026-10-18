@@ -91,6 +91,8 @@ class MainActivity : Activity() {
             divider = null
             choiceMode = ListView.CHOICE_MODE_SINGLE
             isFocusable = true
+            isFocusableInTouchMode = true
+            descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
             setOnItemClickListener { _, _, position, _ ->
                 if (position in movies.indices) playMovie(movies[position])
             }
@@ -98,6 +100,7 @@ class MainActivity : Activity() {
         root.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
         loadMovies()
+        list.post { list.requestFocus() }
     }
 
     private fun getText(url: String): String {
