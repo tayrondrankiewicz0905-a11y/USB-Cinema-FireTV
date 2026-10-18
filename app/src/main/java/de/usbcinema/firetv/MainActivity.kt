@@ -92,7 +92,7 @@ class MainActivity : Activity() {
             choiceMode = ListView.CHOICE_MODE_SINGLE
             isFocusable = true
             isFocusableInTouchMode = true
-            descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+            descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
             setOnItemClickListener { _, _, position, _ ->
                 if (position in movies.indices) playMovie(movies[position])
             }
@@ -146,6 +146,10 @@ class MainActivity : Activity() {
                             v.isFocusable = true
                             return v
                         }
+                    }
+                    if (found.isNotEmpty()) {
+                        list.setSelection(0)
+                        list.post { list.requestFocus() }
                     }
                     status.text = if (found.isEmpty())
                         "Server online, aber keine Filme gefunden. Ist der USB-Stick angeschlossen?"
@@ -242,6 +246,27 @@ class MainActivity : Activity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (player == null && movies.isNotEmpty()) {
+            val current = list.selectedItemPosition
+                .takeIf { it in movies.indices } ?: 0
+
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    list.requestFocus()
+                    list.setSelection((current + 1).coerceAtMost(movies.lastIndex))
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    list.requestFocus()
+                    list.setSelection((current - 1).coerceAtLeast(0))
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                    playMovie(movies[current])
+                    return true
+                }
+            }
+        }
         if (keyCode == KeyEvent.KEYCODE_BACK && player != null) {
             showLibrary()
             return true
