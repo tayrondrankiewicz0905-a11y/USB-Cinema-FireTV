@@ -247,6 +247,12 @@ class MainActivity : Activity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (player == null &&
+            (keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
+             keyCode == KeyEvent.KEYCODE_ENTER)) {
+            status.text = "OK-Taste erkannt"
+        }
+
         if (keyCode == KeyEvent.KEYCODE_BACK && player != null) {
             showLibrary()
             return true
